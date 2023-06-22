@@ -56,14 +56,19 @@ class UnbalancedDisk(gym.Env):
         
         obs = self.get_obs()
         th = np.arctan2(obs[0], obs[1])
-        omega = obs[2]
-        sigma = 1
-        return np.exp(-((th-np.pi)**2)/sigma**2)
+        omega = np.abs(obs[2])
+        funci = lambda x_tar, x: np.exp(-(x - x_tar)**2)
+        return  1/(0.5*(1-funci(omega, 0))+0.2/(funci(th, np.pi))+0.001)
+        
+        # sigma = 1
+        # if np.abs(th) > np.pi-0.1 and np.abs(omega) < 1e-2:
+        #     return +1000000
+        # else:
+        #     return np.exp(-(((np.abs(th)-np.pi)+(np.abs(omega)))**2)/sigma**2)
         
         # if np.abs(th) > np.pi-0.1 and np.abs(omega) > 1e-2:
         #     return -10000
-        # elif np.abs(th) > np.pi-0.1 and np.abs(omega) < 1e-2:
-        #     return +100000000
+        
         
         # return abs(omega)*10 -100
 
