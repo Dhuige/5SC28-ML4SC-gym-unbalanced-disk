@@ -24,11 +24,11 @@ class Qfunction(nn.Module):
 
 def rollout(Q, env, epsilon=0.1, N_rollout=10_000): 
     #save the following (use .append)
-    Start_state = [] #hold an array of (x_t)
-    Actions = [] #hold an array of (u_t)
-    Rewards = [] #hold an array of (r_{t+1})
-    End_state = [] #hold an array of (x_{t+1})
-    Terminal = [] #hold an array of (terminal_{t+1})
+    Start_state = np.zeros((2,N_rollout)) #hold an array of (x_t)
+    Actions = np.zeros((1,N_rollout)) #hold an array of (u_t)
+    Rewards =  np.zeros((1,N_rollout)) #hold an array of (r_{t+1})
+    End_state =  np.zeros((2,N_rollout)) #hold an array of (x_{t+1})
+    Terminal =  np.zeros((2,N_rollout)) #hold an array of (terminal_{t+1})
     # Qfun( a numpy array of the obs) -> a numpy array of Q values
     Qfun = lambda x: Q(torch.tensor(x[None,:],dtype=torch.float32))[0].numpy() 
     with torch.no_grad():
@@ -41,14 +41,14 @@ def rollout(Q, env, epsilon=0.1, N_rollout=10_000):
                 action = np.argmax(Qnow)  
             else:  
                 action = env.action_space.sample()  
-            Start_state.append(obs)  
-            Actions.append(action)  
+            Start_state[:,i] = obs
+            Actions[0,i]=action
 
             obs_next_temp, reward, done, info = env.step(action)  
             obs_next = convert_to_angle(obs_next_temp)
  
-            Rewards.append(reward)  
-            End_state.append(obs_next)  
+            Rewards[0,i] = reward
+            End_state[:,i] = obs_next
             obs = obs_next  
             
         obs = env.reset()  
@@ -76,7 +76,7 @@ def eval_Q(Q,env,nsteps=250):
 
 
 
-def DQN_rollout(Q, optimizer, env, gamma=0.98, use_target_net=False, N_iterations=21, N_rollout=20000, \
+def DQN_rollout(Q, optimizer, env, gamma=0.98, use_target_net=True, N_iterations=21, N_rollout=20000, \
                 N_epochs=10, batch_size=32, N_evals=10, target_net_update_feq=100):
     best = -float('inf')
     torch.save(Q.state_dict(),'Q-checkpoint')
@@ -189,4 +189,6 @@ DQN_rollout(Q, optimizer, env, use_target_net=True, gamma=gamma, N_iterations=N_
 # %%
 
 visualize(env, nsteps=10000,visualize=True)
+
+
 # %%
