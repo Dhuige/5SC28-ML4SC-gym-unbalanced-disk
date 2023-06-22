@@ -45,10 +45,6 @@ class DATA():
 
         self._get_data()
 
-        self.train = self._rename_df1(read_csv(self.trainfilepath))
-        self.testsim = self._rename_df1(read_csv(self.testsimfilepath))
-        self.testsub = self._rename_df2(read_csv(self.testsubfilepath))
-
         if not UseOE:
             self.Xtrain, self.Ytrain = self.make_training_data(self.train.u, self.train.th, na, nb)
             self.Xval, self.Yval = self.make_training_data(self.testsim.u, self.testsim.th, na, nb)
@@ -79,6 +75,10 @@ class DATA():
         self.trainfilepath   = path.join(DATA_DIR,'training-data.csv')
         self.testsubfilepath = path.join(DATA_DIR,'test-prediction-submission-file.csv')
         self.testsimfilepath = path.join(DATA_DIR,'test-simulation-submission-file.csv')
+
+        self.train = self._rename_df1(read_csv(self.trainfilepath))
+        self.testsim = self._rename_df1(read_csv(self.testsimfilepath))
+        self.testsub = self._rename_df2(read_csv(self.testsubfilepath))
     
     def _get_data_transform(self, na, nb):
         """Transforms the data to the correct format for the model f(u[k-15]-u[k-1],y[k-15]-y[k-1]) and returns X and Y data"""

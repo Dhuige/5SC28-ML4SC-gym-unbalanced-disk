@@ -10,7 +10,7 @@ from os.path import join, exists
 from sys import stdout
 from os import getcwd, makedirs
 from tqdm import tqdm
-from numpy import arange
+from numpy import arange, savetxt
 from numpy.random import shuffle
 import matplotlib.pyplot as plt
 
@@ -297,6 +297,7 @@ class NOE_Trainer(Model_processes):
             plot: bool = Whether to plot the training process
         """
         ids = arange(len(self.Xtrain),dtype=int) 
+        loss_list = []
 
         for epoch in range(epochs):
             shuffle(ids) #inspace shuffle of the ids of the trainin set to select a random subset 
@@ -318,8 +319,12 @@ class NOE_Trainer(Model_processes):
                 Loss_val = self.criterion(self.model(inputs=self.Xval)[:,n_burn:], self.Yval[:,n_burn:])
                 Loss_train = self.criterion(self.model(inputs=self.Xtrain)[:,n_burn:], self.Ytrain[:,n_burn:])
                 print(f'epoch={epoch}, Validation NRMS={Loss_val.item():.2%}, Train NRMS={Loss_train.item():.2%}')
+                loss_list.append([epoch, Loss_train.cpu(), Loss_val.cpu()])
                 self.model.train()
             
         
         if plot:
             self.plot_results(NOE=True)
+            
+        print(loss_list)
+        savetxt(f'{self.DIR}\\{self.model_name}.csv', loss_list, delimiter=',')
