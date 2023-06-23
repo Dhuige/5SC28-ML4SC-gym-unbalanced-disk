@@ -60,8 +60,8 @@ Qmat = defaultdict(lambda: float(0))
 env = UnbalancedDisk_sincos_cus()
 #%%
 
-Qmat,obs_list, reward_list = Qlearn(env,Qmat, alpha=0.2, epsilon=0.2, gamma=0.99, nsteps=400_000, epsilon_decay=False)
-
+Qmat,obs_list, reward_list = Qlearn(env,Qmat, alpha=0.4, epsilon=0.2, gamma=0.99, nsteps=1_000_000, epsilon_decay=False)
+print("reached the top after: ", np.argmax(reward_list), "iterations")
 # %%
 
 visualize_range = -1000
@@ -75,4 +75,9 @@ plt.show()
 #%%
 
 Qmat,obs_list, reward_list = Qlearn(env,Qmat, alpha=0.1, epsilon=0, gamma=0.99, nsteps=300,visualize=True)
+plt.plot((reward_list), label="reward" , alpha=0.5)
+plt.legend()
+plt.show()
+print("reached the top after:", np.argmax(reward_list), "iterations")
 
+# %%
