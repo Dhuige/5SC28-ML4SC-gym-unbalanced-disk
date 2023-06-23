@@ -82,7 +82,7 @@ def DQN_rollout(Q, optimizer, env, gamma=0.98, use_target_net=True, N_iterations
     torch.save(Q.state_dict(),'Q-checkpoint')
     
     for iteration in range(N_iterations):
-        epsilon = 1.0 - iteration/(N_iterations-1) #e=) 1.
+        epsilon = 1.0 - iteration/(N_iterations-1) 
         print(f'rollout iteration {iteration} with epsilon={epsilon:.2%}...')
         
         #2. rollout
@@ -115,6 +115,7 @@ def DQN_rollout(Q, optimizer, env, gamma=0.98, use_target_net=True, N_iterations
                 Qnow = Q(Start_state_batch)[action_index]
                 
                 Loss = torch.mean((Rewards_batch + gamma*maxQ - Qnow)**2)  
+                print(f">>>>>>>>>>>>>>>>>>Loss: {Loss:.2f}<<<<<<<<<<<<<<<<<<<<<<")
                 optimizer.zero_grad() 
                 Loss.backward()   
                 optimizer.step() 
@@ -176,7 +177,10 @@ obs = convert_to_angle(obs_temp)
 #%%
 obs_tensor = torch.tensor(obs,dtype=torch.float32)[None,:] #convert to an torch tensor with size (1, Nobs=6)
 
-gamma = 0.98; batch_size = 64; N_iterations = 20; N_rollout = 20000; N_epochs = 25; N_evals = 10; lr = 0.0005
+gamma = 0.98; batch_size = 16; N_iterations = 20; N_rollout = 20000; N_epochs = 20; N_evals = 10; lr = 0.0005
+
+Start_state, Actions, Rewards, End_state, Terminal = rollout(Q,env,N_rollout=300)
+print(Start_state, Actions, Rewards, End_state, Terminal)
 
 
 Q = Qfunction(env)
