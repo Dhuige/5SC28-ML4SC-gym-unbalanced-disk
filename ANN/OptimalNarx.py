@@ -12,9 +12,6 @@ simplefilter(action='ignore', category=pd.errors.ParserWarning)
 simplefilter(action='ignore', category=UserWarning)
 simplefilter(action='ignore', category=FutureWarning)
 
-store_loss = np.zeros((16,15))
-lowest_loss = 100
-
 data = DATA(10, 3) 
 Xtrain, Ytrain = data.Xtrain, data.Ytrain
 
@@ -29,16 +26,8 @@ dl_train = DataLoader(Dataset_train, batch_size=32, shuffle=True)
 dl_val = DataLoader(Dataset_val, batch_size=32, shuffle=False)
 dl_test = DataLoader(Dataset_test, batch_size=32, shuffle=True)
 
-store_loss3_outfeatures = np.zeros((10,5))
+model = NARX(8)
 
-for i in range(1,11):
-    for j in range(5):
-        model = NARX(i)
+train_module = Trainer(model, dl_train, dl_val, dl_test, "best_model.pt")
+train_module.fit(100, 32)
 
-        train_module = Trainer(model, dl_train, dl_val, dl_test, DIR='savefolderpytorch\\NARX')
-
-        loss = train_module.fit(epochs=10, batch_size=32, save_log=False)
-
-        store_loss3_outfeatures[i-1, j] = loss
-
-        np.savetxt("loss3.csv", store_loss3_outfeatures, delimiter=",")

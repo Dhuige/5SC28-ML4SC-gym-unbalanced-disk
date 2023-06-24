@@ -223,6 +223,7 @@ class Trainer(Model_processes):
         df_val = DataFrame()
 
         # Train the model for the provided amount of epochs
+        early_stopping=0
         for epoch in range(1, epochs+1):
             print(f'Epoch {epoch}')
             metrics_train = self.train_epoch(dl_train)
@@ -230,9 +231,16 @@ class Trainer(Model_processes):
 
             metrics_val = self.val_epoch(dl_val)
             df_val = df_val.append(DataFrame({'epoch': [epoch], **metrics_val}), ignore_index=True)
+
             if metrics_val["loss"]<best_val:
                 best_val = metrics_val["loss"]
                 self.save_model(f'{self.DIR}\\{self.model_name}.pt')
+                early_stopping = 0
+            else:
+                early_stopping +=1
+                if early_stopping == 10:
+                    break
+        print("finished training, plots are being made and data is saved")
 
         if save_log:
             # Save the model data
@@ -242,6 +250,7 @@ class Trainer(Model_processes):
             self.df_val = df_val
 
             self.plot_results()
+            
         else:
             return df_val["loss"].min()
 

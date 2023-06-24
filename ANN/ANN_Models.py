@@ -29,7 +29,7 @@ class NARX(nn.Module):
                                  nn.Linear(out_features, out_features),
                                  nn.LeakyReLU(),
                                  )
-        self.fc1 = nn.Sequential(nn.LazyLinear(out_features),
+        self.fc1 = nn.Sequential(nn.Linear(out_features, out_features),
                                 nn.LeakyReLU(),
                                 nn.Linear(out_features, output_dim),
         )
