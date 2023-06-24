@@ -25,9 +25,11 @@ class NARX(nn.Module):
         self.fc0 = nn.Sequential(nn.LazyLinear(out_features),
                                  nn.LeakyReLU(),
                                  nn.Linear(out_features, out_features),
-                                 nn.LeakyReLU()
+                                 nn.LeakyReLU(),
+                                 nn.Linear(out_features, out_features),
+                                 nn.LeakyReLU(),
                                  )
-        self.fc1 = nn.Sequential(nn.Linear(out_features, out_features),
+        self.fc1 = nn.Sequential(nn.LazyLinear(out_features),
                                 nn.LeakyReLU(),
                                 nn.Linear(out_features, output_dim),
         )
@@ -35,7 +37,8 @@ class NARX(nn.Module):
         self.name = f'NARX_{out_features}'
         
     def forward(self, x):
-        x = self.fc1(self.fc0(x))
+        x = self.fc0(x)
+        x = self.fc1(x)
 
         return x
     

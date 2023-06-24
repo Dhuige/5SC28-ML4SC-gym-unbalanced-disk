@@ -3,7 +3,7 @@ from torch.nn.utils import clip_grad_value_
 from torch import device, save, no_grad
 from torch.utils.data import DataLoader
 from torch.nn import Module, MSELoss
-from torch import tensor, float32, mean, save
+from torch import tensor, float32, mean, save, sqrt, std
 from torch.optim import Adam
 from pandas import DataFrame
 from os.path import join, exists
@@ -23,7 +23,6 @@ class Model_processes():
 
         if not exists(DIR):
             makedirs(DIR)
-
 
     def save_model(self, DIR:str|None=None):
         """Save the model"""
@@ -134,7 +133,7 @@ class Trainer(Model_processes):
             output = self.model(inputs)
 
             # Perform backpropagation
-            loss = self.criterion(output, truths)
+            loss = sqrt(self.criterion(output, truths))/std(truths)
             loss.backward()
             clip_grad_value_(self.model.parameters(), 0.1)
             self.optimizer.step()
@@ -182,7 +181,7 @@ class Trainer(Model_processes):
 
                 # Run model on the inputs
                 output = self.model(inputs)
-                loss = self.criterion(output, truths)
+                loss = sqrt(self.criterion(output, truths))/std(truths)
 
                 # Store the metrics of this step
                 step_metrics = {
