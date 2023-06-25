@@ -54,17 +54,23 @@ def Qlearn(env,Qmat, alpha=0.1, epsilon=0.1, gamma=1.0, nsteps=10000,visualize=F
 
 fulldata = []
 for i, data1 in enumerate(np.arange(0,1.1,0.1)):
+    rew_arg = 0
+    max_rew = 0
+
     Qmat = defaultdict(lambda: float(0))
     env = UnbalancedDisk_sincos_cus()
     Qmat,obs_list, reward_list = Qlearn(env, Qmat, alpha=data1, epsilon=0.2, gamma=0.99, nsteps=1_000_00, epsilon_decay=False)
     print("reached the top after: ", np.argmax(reward_list), "iterations")
     pdata = [data1, 0.2, np.argmax(reward_list)]
-
-    Qmat,obs_list, reward_list = Qlearn(env,Qmat, alpha=0.1, epsilon=0, gamma=0.99, nsteps=300,visualize=False)
-    print("reached the top after:", np.argmax(reward_list), "iterations")
-    print("max reward:", np.max(reward_list))
-    pdata.append(np.argmax(reward_list))
-    pdata.append(np.max(reward_list))
+    for j in range(5):
+        Qmat,obs_list, reward_list = Qlearn(env,Qmat, alpha=0.1, epsilon=0, gamma=0.99, nsteps=300,visualize=False)
+        rew_arg = np.argmax(reward_list)
+        max_rew = np.max(reward_list)
+    
+    print("reached the top after:", rew_arg/5, "iterations")
+    print("max reward:", max_rew/5)
+    pdata.append(rew_arg/5)
+    pdata.append(max_rew/5)
     env.close()
     fulldata.append(pdata)
     np.savetxt("data.csv", fulldata, delimiter=",")
