@@ -50,24 +50,22 @@ class UnbalancedDisk(gym.Env):
         self.u = 0 #for visual
         self.reset()
         
-    # def reward_function(self):
-    """Reward function 1 for Q learning.	
-    Args:
-        None
-    Returns:
-        reward (float): Reward for the current state.
-    """
+    def reward_function(self):
+        """Reward function 1 for Q learning.	
+        Args:
+            None
+        Returns:
+            reward (float): Reward for the current state.
+        """
+        obs = self.get_obs()
+        th = np.arctan2(obs[0], obs[1])
+        omega = obs[2]
+        if np.abs(th) > np.pi-0.1 and np.abs(omega) > 1e-2:
+            return -10000
+        elif np.abs(th) > np.pi-0.1 and np.abs(omega) < 1e-2:
+            return +100000000
         
-        
-    #     obs = self.get_obs()
-    #     th = np.arctan2(obs[0], obs[1])
-    #     omega = obs[2]
-    #     if np.abs(th) > np.pi-0.1 and np.abs(omega) > 1e-2:
-    #         return -10000
-    #     elif np.abs(th) > np.pi-0.1 and np.abs(omega) < 1e-2:
-    #         return +100000000
-        
-    #     return abs(omega)*10 -100
+        return abs(omega)*10 -100
     
     def func(self, x, x0, sigma):
         """Exponetial function for reward function.
@@ -96,8 +94,9 @@ class UnbalancedDisk(gym.Env):
     #         return 1_000_000
     #     if np.abs(th) > np.pi-0.05 and np.abs(omega) > 1e-2:
     #         return -1_000
-
     #     return 100*(reward)-1000
+
+
     def func2(self, x, x0, sigma)->float:
         """2D normal function.
         Args:
@@ -108,23 +107,25 @@ class UnbalancedDisk(gym.Env):
         """
         return np.exp(-np.transpose(x-x0)@sigma@(x-x0)).item()
 
-    def reward_function(self):
-        """Reward function for Q learning 3.
-        Args:
-            None
-        Returns:
-            reward (float): Reward for the current state.
-        """
-        obs = self.get_obs()
-        th = np.arctan2(obs[0], obs[1])
-        omega = obs[2]
+    # def reward_function(self):
+    #     """Reward function for Q learning 3.
+    #     Args:
+    #         None
+    #     Returns:
+    #         reward (float): Reward for the current state.
+    #     """
+    #     obs = self.get_obs()
+    #     th = np.arctan2(obs[0], obs[1])
+    #     omega = obs[2]
 
-        state = np.array([[th],[omega]])
-        target = np.array([[np.pi],[0]])
-        sigma = np.array([[1,0],[0,10]])
-        sigma2 = np.array([[0.5,0],[0,0.5]])
-        reward = 10*self.func2(state, target, sigma) + 100*self.func2(state, target, sigma2)
-        return reward-5
+    #     state = np.array([[th],[omega]])
+    #     target = np.array([[np.pi],[0]])
+    #     sigma = np.array([[1,0],[0,10]])
+    #     sigma2 = np.array([[0.5,0],[0,0.5]])
+    #     if np.abs(th) > np.pi-0.1 and np.abs(omega) < 1e-2:
+    #         return 1_000
+    #     reward = 10*self.func2(state, target, sigma) + 100*self.func2(state, target, sigma2) #+ 100*self.func2(state, target, sigma3)
+    #     return reward-15
 
 
 

@@ -1,18 +1,15 @@
-#%%
 from collections import defaultdict
 import gym, time
 import numpy as np
 import os
 from UnbalancedDisk2 import *
 import matplotlib.pyplot as plt 
+from collections import defaultdict
 
-#%%
 def argmax(a):
     a = np.array(a)
     return np.random.choice(np.arange(a.shape[0],dtype=int)[a==np.max(a)])
 
-
-from collections import defaultdict
 def Qlearn(env,Qmat, alpha=0.1, epsilon=0.1, gamma=1.0, nsteps=10000,visualize=False, epsilon_decay=False):
      #any new argument be set to zero
     obs_list = np.zeros((nsteps,2))
@@ -54,30 +51,20 @@ def Qlearn(env,Qmat, alpha=0.1, epsilon=0.1, gamma=1.0, nsteps=10000,visualize=F
             print(f"{z}/{nsteps} -cur_angle {(obs[0]):3f}-cur_vel {obs[1]:.3f}- highest reward: {highest_reward:.4f} cur reward ={reward:.4f} ", end='\r')
 
     return Qmat, obs_list, reward_list
-#%%
-Qmat = defaultdict(lambda: float(0))
-#%%
-env = UnbalancedDisk_sincos_cus()
-#%%
 
-Qmat,obs_list, reward_list = Qlearn(env,Qmat, alpha=0.3, epsilon=0.2, gamma=0.99, nsteps=1_000_000, epsilon_decay=False)
-print("reached the top after: ", np.argmax(reward_list), "iterations")
-# %%
+fulldata = []
+for i, data1 in enumerate(np.arange(0,1.1,0.1)):
+    Qmat = defaultdict(lambda: float(0))
+    env = UnbalancedDisk_sincos_cus()
+    Qmat,obs_list, reward_list = Qlearn(env, Qmat, alpha=data1, epsilon=0.2, gamma=0.99, nsteps=1_000_00, epsilon_decay=False)
+    print("reached the top after: ", np.argmax(reward_list), "iterations")
+    pdata = [data1, 0.2, np.argmax(reward_list)]
 
-visualize_range = -1000
-plt.plot(obs_list[:,0], label="angle" ,alpha=0.5)
-plt.plot((obs_list[:,1]), label="velocity" ,alpha=0.8)
-plt.plot((reward_list), label="reward" , alpha=0.5)
-plt.yscale("symlog")
-plt.legend()
-plt.show()
-
-#%%
-
-Qmat,obs_list, reward_list = Qlearn(env,Qmat, alpha=0.1, epsilon=0, gamma=0.99, nsteps=300,visualize=True)
-plt.plot((reward_list), label="reward" , alpha=0.5)
-plt.legend()
-plt.show()
-print("reached the top after:", np.argmax(reward_list), "iterations")
-
-# %%
+    Qmat,obs_list, reward_list = Qlearn(env,Qmat, alpha=0.1, epsilon=0, gamma=0.99, nsteps=300,visualize=False)
+    print("reached the top after:", np.argmax(reward_list), "iterations")
+    print("max reward:", np.max(reward_list))
+    pdata.append(np.argmax(reward_list))
+    pdata.append(np.max(reward_list))
+    env.close()
+    fulldata.append(pdata)
+    np.savetxt("data.csv", fulldata, delimiter=",")
