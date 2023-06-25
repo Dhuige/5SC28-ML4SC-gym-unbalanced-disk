@@ -66,11 +66,10 @@ class UnbalancedDisk(gym.Env):
         # else:
         #     return np.exp(-(((np.abs(th)-np.pi)+(np.abs(omega)))**2)/sigma**2)
         
-        # if np.abs(th) > np.pi-0.1 and np.abs(omega) > 1e-2:
-        #     return -10000
-        
-        
-        # return abs(omega)*10 -100
+        if np.abs(th) > np.pi-0.1 and np.abs(omega) < 1e-2:
+            return 1000000
+        else:
+            return abs(omega)*10
 
     def step(self, action):
         #convert action to u
