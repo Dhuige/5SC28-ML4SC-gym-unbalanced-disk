@@ -53,24 +53,24 @@ def Qlearn(env,Qmat, alpha=0.1, epsilon=0.1, gamma=1.0, nsteps=10000,visualize=F
     return Qmat, obs_list, reward_list
 
 fulldata = []
-for i, data1 in enumerate(np.arange(0,1.1,0.1)):
-    rew_arg = 0
-    max_rew = 0
 
-    Qmat = defaultdict(lambda: float(0))
-    env = UnbalancedDisk_sincos_cus()
-    Qmat,obs_list, reward_list = Qlearn(env, Qmat, alpha=data1, epsilon=0.2, gamma=0.99, nsteps=1_000_00, epsilon_decay=False)
-    print("reached the top after: ", np.argmax(reward_list), "iterations")
-    pdata = [data1, 0.2, np.argmax(reward_list)]
-    for j in range(5):
-        Qmat,obs_list, reward_list = Qlearn(env,Qmat, alpha=0.1, epsilon=0, gamma=0.99, nsteps=300,visualize=False)
-        rew_arg = np.argmax(reward_list)
-        max_rew = np.max(reward_list)
-    
-    print("reached the top after:", rew_arg/5, "iterations")
-    print("max reward:", max_rew/5)
-    pdata.append(rew_arg/5)
-    pdata.append(max_rew/5)
-    env.close()
-    fulldata.append(pdata)
-    np.savetxt("data.csv", fulldata, delimiter=",")
+rew_arg = 0
+max_rew = 0
+
+Qmat = defaultdict(lambda: float(0))
+env = UnbalancedDisk_sincos_cus()
+Qmat,obs_list, reward_list = Qlearn(env, Qmat, alpha=0.5, epsilon=0.3, gamma=0.99, nsteps=1_000_000, epsilon_decay=False)
+print("reached the top after: ", np.argmax(reward_list), "iterations")
+pdata = [0.5, 0.3, np.argmax(reward_list)]
+for j in range(10):
+    Qmat,obs_list, reward_list = Qlearn(env,Qmat, alpha=0.1, epsilon=0, gamma=0.99, nsteps=300,visualize=False)
+    rew_arg += np.argmax(reward_list)
+    max_rew += np.max(reward_list)
+
+print("reached the top after:", rew_arg/10, "iterations")
+print("max reward:", max_rew/10)
+pdata.append(rew_arg/10)
+pdata.append(max_rew/10)
+env.close()
+fulldata.append(pdata)
+np.savetxt(f"data_{0.4}_{0.2}.csv", fulldata, delimiter=",")
