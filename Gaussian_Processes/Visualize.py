@@ -135,8 +135,8 @@ for split in ['val_pred', 'val_sim']:
     sns.set(rc={'figure.figsize': (8, 5)})
 
     # Plot the lines
-    sns.lineplot(x=x, y=nrms_full, label='full')
-    sns.lineplot(x=x, y=nrms_sparse, label='sparse')
+    sns.lineplot(x=x, y=nrms_full, label='full', marker='o')
+    sns.lineplot(x=x, y=nrms_sparse, label='sparse',marker='o')
 
     # Set logarithmic scale
     plt.yscale('log')
